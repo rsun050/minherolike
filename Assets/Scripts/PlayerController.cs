@@ -9,7 +9,8 @@ public class PlayerController : MonoBehaviour {
 
     private float horizDirection = 0f;
     private float vertDirection = 0f;
-    
+
+    private float refSpeedVar;    
     private float currSpeed = 0f;
     #endregion variables
 
@@ -21,12 +22,12 @@ public class PlayerController : MonoBehaviour {
         currSpeed = Mathf.SmoothDamp(
             currSpeed,
             (dir.magnitude > 0.01f) ? maxMoveSpeed : 0,
-            ref currSpeed,
+            ref refSpeedVar,
             moveDamping,
             maxMoveSpeed
         );
 
-        transform.Translate(currSpeed * dir);
+        transform.Translate(currSpeed * Time.deltaTime * dir);
     }
 
     private void GetInputs() {
