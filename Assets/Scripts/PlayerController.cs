@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
     #region variables
+    [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float maxMoveSpeed;
     [SerializeField] private float moveDamping;
 
@@ -18,6 +19,12 @@ public class PlayerController : MonoBehaviour {
     void Update() {
         GetInputs();
         Vector2 dir = (Vector2.up * vertDirection + Vector2.right * horizDirection).normalized;
+        if(dir.x > 0) { // right
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        } else if(dir.x < 0) { // left
+            transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);            
+        }
+
 
         currSpeed = Mathf.SmoothDamp(
             currSpeed,
@@ -27,7 +34,17 @@ public class PlayerController : MonoBehaviour {
             maxMoveSpeed
         );
 
-        transform.Translate(currSpeed * Time.deltaTime * dir);
+        if(dir == Vector2.zero) {
+            rb.linearVelocity = currSpeed * dir;
+        } else {
+            rb.AddForce(currSpeed * dir);        
+        }
+    }
+
+    void LateUpdate() {
+        if(rb.linearVelocity.magnitude > maxMoveSpeed) {
+            rb.linearVelocity = maxMoveSpeed * rb.linearVelocity.normalized;
+        }
     }
 
     private void GetInputs() {
