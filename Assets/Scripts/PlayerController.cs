@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour {
     #region variables
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Animator animator;
     [SerializeField] private float maxMoveSpeed;
     [SerializeField] private float moveDamping;
 
@@ -25,7 +26,6 @@ public class PlayerController : MonoBehaviour {
             transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);            
         }
 
-
         currSpeed = Mathf.SmoothDamp(
             currSpeed,
             (dir.magnitude > 0.01f) ? maxMoveSpeed : 0,
@@ -35,9 +35,11 @@ public class PlayerController : MonoBehaviour {
         );
 
         if(dir == Vector2.zero) {
-            rb.linearVelocity = currSpeed * dir;
+            animator.SetBool("walk", false);
+            rb.linearVelocity = Vector2.zero;
         } else {
-            rb.AddForce(currSpeed * dir);        
+            animator.SetBool("walk", true);
+            rb.AddForce(maxMoveSpeed * dir); 
         }
     }
 
